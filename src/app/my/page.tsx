@@ -47,7 +47,7 @@ export default function MyPage() {
 
         <Link
           href="/"
-          className="mt-6 flex h-14 items-center justify-center rounded-2xl bg-primary-light text-[16px] font-bold text-primary"
+          className="pressable mt-6 flex h-14 items-center justify-center rounded-2xl bg-primary-light text-[16px] font-bold text-primary"
         >
           주차장 찾으러 가기
         </Link>

@@ -10,6 +10,7 @@ import NavBanner, { type BannerContent } from '@/components/navigation/NavBanner
 import NavBottomCard from '@/components/navigation/NavBottomCard';
 import { CarMarker, DestinationMarker, TurnCallout } from '@/components/navigation/NavMarkers';
 import { useNow } from '@/hooks/useNow';
+import { noteReplace } from '@/hooks/useSafeBack';
 import { cn } from '@/lib/cn';
 import { CONFIG } from '@/lib/config';
 import { formatDistance, formatSlotPosition, formatTime } from '@/lib/format';
@@ -96,12 +97,18 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
   // ---- 도착 처리 ----
   useEffect(() => {
     if (phase === 'parked') {
-      const t = setTimeout(() => router.replace('/parked'), CONFIG.nav.doneMs);
+      const t = setTimeout(() => {
+        noteReplace();
+        router.replace('/parked');
+      }, CONFIG.nav.doneMs);
       return () => clearTimeout(t);
     }
     if (phase === 'arrived') {
       toast(`${lot.shortName}에 도착했어요.`);
-      const t = setTimeout(() => router.replace(`/lot/${lotId}`), CONFIG.nav.doneMs);
+      const t = setTimeout(() => {
+        noteReplace();
+        router.replace(`/lot/${lotId}`);
+      }, CONFIG.nav.doneMs);
       return () => clearTimeout(t);
     }
   }, [phase, router, lot.shortName, lotId]);
@@ -174,7 +181,11 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
 
   // ---- 지도 표시물 ----
   // 도착지 핀과 겹치는 마지막 회전 말풍선은 생략
-  const upcoming = mans.filter((m) => m.type !== 'arrive' && m.at > d + 0.5 && route.total - m.at > 25).slice(0, 2);
+  const upcoming = mans
+    .filter((m) => m.type !== 'arrive' && m.at > d + 0.5 && route.total - m.at > 25)
+    .slice(0, 2)
+    // 두 번째 회전이 너무 가까우면(말풍선 겹침) 첫 번째만 표시
+    .filter((m, i, arr) => i === 0 || m.at - arr[0].at > 70);
   const markers: MapMarker[] = [
     ...upcoming.map((m) => ({
       id: `turn-${m.at}`,

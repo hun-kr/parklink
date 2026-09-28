@@ -67,7 +67,7 @@ export default function SlotPreview({
       <Link
         href={href}
         aria-label="내 차 찾기 지도 크게 보기"
-        className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-ink/80 text-white"
+        className="pressable absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-ink/80 text-white"
       >
         <Maximize2 size={18} />
       </Link>

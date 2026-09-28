@@ -2,7 +2,7 @@ const TZ = 'Asia/Seoul';
 
 /** "10초 전 업데이트" 등 */
 export function formatUpdatedAgo(updatedAt: number | null, now: number | null) {
-  if (updatedAt === null || now === null) return '실시간 업데이트';
+  if (updatedAt === null || now === null) return '실시간 연결 중…';
   const sec = Math.max(0, Math.floor((now - updatedAt) / 1000));
   if (sec < 5) return '방금 전 업데이트';
   if (sec < 60) return `${sec}초 전 업데이트`;

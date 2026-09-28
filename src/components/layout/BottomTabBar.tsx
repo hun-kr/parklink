@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Car, User } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { useMyCarStore } from '@/store/useMyCarStore';
 
 function ParkingTabIcon({ active }: { active: boolean }) {
   return (
@@ -26,6 +27,7 @@ const TABS = [
 
 export default function BottomTabBar() {
   const pathname = usePathname();
+  const hasCar = useMyCarStore((s) => s.hydrated && !!s.myParking);
 
   return (
     <nav className="flex shrink-0 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]">
@@ -43,7 +45,12 @@ export default function BottomTabBar() {
             {tab.href === '/' ? (
               <ParkingTabIcon active={active} />
             ) : tab.href === '/my-car' ? (
-              <Car size={26} strokeWidth={1.8} />
+              <span className="relative">
+                <Car size={26} strokeWidth={1.8} />
+                {hasCar && (
+                  <span aria-label="저장된 주차 위치 있음" className="absolute -right-1 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-available" />
+                )}
+              </span>
             ) : (
               <User size={26} strokeWidth={1.8} />
             )}

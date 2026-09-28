@@ -29,14 +29,14 @@ export function ActionButton({
   className,
 }: ActionButtonProps) {
   const classes = cn(
-    'flex h-[52px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-bold tracking-[-0.02em] transition-colors',
-    size === 'sm' ? 'text-[15px]' : 'text-[16.5px]',
+    'pressable flex h-[52px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-bold tracking-[-0.02em]',
+    size === 'sm' ? 'text-[15px] max-[380px]:text-[14px]' : 'text-[16.5px]',
     VARIANT[variant],
     className,
   );
   const content = (
     <>
-      {Icon && <Icon size={size === 'sm' ? 20 : 22} strokeWidth={2.2} className="shrink-0" />}
+      {Icon && <Icon size={size === 'sm' ? 20 : 22} strokeWidth={2.2} className={cn('shrink-0', size === 'sm' && 'max-[380px]:hidden')} />}
       {label}
     </>
   );

@@ -15,7 +15,7 @@ export function ZoneCardsDetail({ lotId, zones }: { lotId: string; zones: ZoneSu
         <Link
           key={z.id}
           href={`/lot/${lotId}/status?zone=${z.id}`}
-          className="flex flex-col rounded-2xl border border-line bg-[#F8FAFC] px-3 py-3 active:bg-surface"
+          className="pressable flex flex-col rounded-2xl border border-line bg-[#F8FAFC] px-3 py-3 active:bg-surface"
         >
           <span className="text-[13px] font-medium text-ink-sub">{z.name}</span>
           <span className="mt-1 text-[22px] font-extrabold leading-none text-primary">{z.availableSpaces}면</span>

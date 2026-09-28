@@ -9,6 +9,7 @@ import LotBriefCard from '@/components/mycar/LotBriefCard';
 import SlotPosition from '@/components/mycar/SlotPosition';
 import SlotPreview from '@/components/mycar/SlotPreview';
 import BottomActions from '@/components/ui/BottomActions';
+import PageLoading from '@/components/ui/PageLoading';
 import { formatDateTime } from '@/lib/format';
 import { getLot } from '@/services/parkingService';
 import { useMyCarStore } from '@/store/useMyCarStore';
@@ -29,7 +30,7 @@ export default function ParkedPage() {
   const lot = useLotSummary(lotId);
   const slots = useSlots(lotId);
 
-  if (!hydrated) return <main className="flex-1" />;
+  if (!hydrated) return <PageLoading label="주차 정보를 불러오는 중" />;
 
   if (!myParking || !lot || !getLot(myParking.lotId)) {
     return (
@@ -39,7 +40,7 @@ export default function ParkedPage() {
         </span>
         <h1 className="mt-5 text-[22px] font-bold">저장된 주차 위치가 없어요</h1>
         <p className="mt-2 text-[15px] text-ink-muted">주차장 안내를 받아 주차를 완료해 주세요.</p>
-        <Link href="/" className="mt-8 flex h-[52px] w-full items-center justify-center rounded-2xl bg-primary text-[16.5px] font-bold text-white">
+        <Link href="/" className="pressable mt-8 flex h-[52px] w-full items-center justify-center rounded-2xl bg-primary text-[16.5px] font-bold text-white">
           홈으로
         </Link>
       </main>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSafeBack } from '@/hooks/useSafeBack';
 import { Building2, ChevronLeft, Heart, Share } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { LotSummary } from '@/lib/types';
@@ -12,7 +12,7 @@ const CIRCLE_BTN =
 
 /** 03/04 시안 상단: 대표 사진(없으면 placeholder) + 뒤로/찜/공유 + 제목·주소·배지 */
 export default function LotHero({ lot, size, backHref = '/' }: { lot: LotSummary; size: 'lg' | 'sm'; backHref?: string }) {
-  const router = useRouter();
+  const goBack = useSafeBack(backHref);
   const [liked, setLiked] = useState(false);
   const photo = lot.photos[0];
 
@@ -47,7 +47,7 @@ export default function LotHero({ lot, size, backHref = '/' }: { lot: LotSummary
           type="button"
           aria-label="뒤로가기"
           className={CIRCLE_BTN}
-          onClick={() => (window.history.length > 1 ? router.back() : router.push(backHref))}
+          onClick={goBack}
         >
           <ChevronLeft size={26} strokeWidth={2.2} />
         </button>

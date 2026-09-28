@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Car, CarFront, ChevronLeft, ChevronRight, Clock3, Footprints, MapPin, Navigation, Share2 } from 'lucide-react';
 import BottomTabBar from '@/components/layout/BottomTabBar';
+import { useSafeBack } from '@/hooks/useSafeBack';
 import LotBriefCard from '@/components/mycar/LotBriefCard';
 import SlotPosition from '@/components/mycar/SlotPosition';
 import ParkingMap from '@/components/parking/ParkingMap';
 import BottomActions from '@/components/ui/BottomActions';
+import PageLoading from '@/components/ui/PageLoading';
 import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder';
 import { formatDate, formatTime } from '@/lib/format';
 import { buildRoute, pointAt } from '@/lib/route';
@@ -41,7 +43,7 @@ function EmptyState() {
           주차장 안내를 받아 주차를 완료하면
           <br />내 차 위치가 자동으로 저장됩니다.
         </p>
-        <Link href="/" className="mt-8 flex h-[52px] w-full items-center justify-center rounded-2xl bg-primary text-[16.5px] font-bold text-white">
+        <Link href="/" className="pressable mt-8 flex h-[52px] w-full items-center justify-center rounded-2xl bg-primary text-[16.5px] font-bold text-white">
           홈으로
         </Link>
       </main>
@@ -55,6 +57,7 @@ const WALK_MS = 4200;
 /** 07 시안: 내 차 찾기 */
 export default function MyCarClient({ shared }: { shared: SharedParking | null }) {
   const router = useRouter();
+  const safeBack = useSafeBack('/');
   const { myParking, hydrated, clear } = useMyCarStore();
 
   // 공유 링크로 열었고 내 저장 위치와 다르면 공유받은 위치를 보여준다
@@ -100,7 +103,7 @@ export default function MyCarClient({ shared }: { shared: SharedParking | null }
   };
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
-  if (!hydrated) return <main className="flex-1" />;
+  if (!hydrated) return <PageLoading label="내 차 위치를 불러오는 중" />;
   if (!parking || !lot || !zoneDef) return <EmptyState />;
 
   const walkMin = zoneDef.walkMinutesTo['eng1-building'] ?? 2;
@@ -134,7 +137,7 @@ export default function MyCarClient({ shared }: { shared: SharedParking | null }
           <button
             type="button"
             aria-label="뒤로가기"
-            onClick={() => (window.history.length > 1 ? router.back() : router.push('/'))}
+            onClick={safeBack}
             className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full text-ink active:bg-surface"
           >
             <ChevronLeft size={28} strokeWidth={2.2} />
@@ -178,8 +181,8 @@ export default function MyCarClient({ shared }: { shared: SharedParking | null }
             </div>
             <div className="grid grid-cols-[1.45fr_1fr_1.15fr] divide-x divide-line border-t border-line text-[13.5px] tracking-[-0.02em]">
               <div className="px-3 py-3">
-                <p className="flex items-center gap-1.5 text-ink-muted">
-                  <Clock3 size={15} className="shrink-0" />
+                <p className="flex items-center gap-1.5 whitespace-nowrap text-ink-muted">
+                  <Clock3 size={15} className="shrink-0 max-[380px]:hidden" />
                   주차 시간
                 </p>
                 {parking.parkedAt ? (
@@ -193,15 +196,15 @@ export default function MyCarClient({ shared }: { shared: SharedParking | null }
                 )}
               </div>
               <div className="px-3 py-3">
-                <p className="flex items-center gap-1.5 text-ink-muted">
-                  <Car size={15} className="shrink-0" />
+                <p className="flex items-center gap-1.5 whitespace-nowrap text-ink-muted">
+                  <Car size={15} className="shrink-0 max-[380px]:hidden" />
                   차량 번호
                 </p>
                 <p className="mt-1 whitespace-nowrap font-medium">{parking.plateNumber ?? '비공개'}</p>
               </div>
               <div className="min-w-0 px-3 py-3">
-                <p className="flex items-center gap-1.5 text-ink-muted">
-                  <MapPin size={15} className="shrink-0" />
+                <p className="flex items-center gap-1.5 whitespace-nowrap text-ink-muted">
+                  <MapPin size={15} className="shrink-0 max-[380px]:hidden" />
                   주차장
                 </p>
                 <p className="mt-1 font-medium leading-snug">{lot.name}</p>

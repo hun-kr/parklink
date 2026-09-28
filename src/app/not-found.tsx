@@ -11,7 +11,7 @@ export default function NotFound() {
       <p className="mt-2 text-[15px] text-ink-muted">주소가 바뀌었거나 없는 주차장이에요.</p>
       <Link
         href="/"
-        className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-primary text-[17px] font-bold text-white"
+        className="pressable mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-primary text-[17px] font-bold text-white"
       >
         홈으로
       </Link>

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useSafeBack } from '@/hooks/useSafeBack';
 import { ChevronRight, Home, Map, MapPin, Navigation, ReceiptText } from 'lucide-react';
 import CompareCards, { type CompareItem } from '@/components/destination/CompareCards';
 import DestinationList, { type DestinationItem } from '@/components/destination/DestinationList';
@@ -76,7 +76,7 @@ function lotCompareItems(ranked: RankedLot[], targetId: string | undefined): Com
 }
 
 export default function DestinationPage() {
-  const router = useRouter();
+  const safeBack = useSafeBack('/');
   const { destinationId, targetOverride, selectDestination, setTargetOverride } = useDestinationStore();
   const plan = useDestinationPlan(destinationId);
   const lots = useLotSummaries();
@@ -115,8 +115,7 @@ export default function DestinationPage() {
 
   const handleBack = () => {
     if (destinationId && !editing) return reset();
-    if (window.history.length > 1) router.back();
-    else router.push('/');
+    safeBack();
   };
 
   const showPlan = !!plan && !editing;
@@ -202,7 +201,7 @@ export default function DestinationPage() {
 
         {showPlan && plan && target && plan.kind === 'zone' && (
           <div className="space-y-4">
-            <Link href={`/lot/${plan.lot.id}`} className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3.5">
+            <Link href={`/lot/${plan.lot.id}`} className="pressable flex items-center gap-3 rounded-2xl bg-surface px-4 py-3.5">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <p className="truncate text-[15.5px] font-bold">{plan.lot.shortName}</p>
