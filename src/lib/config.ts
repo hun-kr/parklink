@@ -21,6 +21,10 @@ export const CONFIG = {
   recommend: {
     spaceWeight: 1,
     walkWeight: 3,
+    /** 주차장 단위 추천에서는 여유면을 이 값까지만 점수에 반영 (가까운 곳 우선) */
+    lotSpaceCap: 10,
+    /** 주차장 단위 추천 후보 최대 거리(m) */
+    lotMaxDistanceM: 900,
   },
   demo: {
     mainLotId: 'skku-eng1',
@@ -30,6 +34,8 @@ export const CONFIG = {
   /** 가상 지도 좌표 1단위 = 1.5m */
   map: {
     metersPerUnit: 1.5,
+    /** 도보 속도 (m/분) */
+    walkMetersPerMinute: 75,
   },
   storageKey: 'parklink:my-car',
 } as const;

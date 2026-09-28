@@ -83,10 +83,13 @@ export interface LotSummary extends ParkingLot {
   distanceM: number;
 }
 
+export type DestinationIcon = 'building' | 'library' | 'lab' | 'sports';
+
 export interface Destination {
   id: string;
   name: string;
   category: string;
+  icon: DestinationIcon;
   address: string;
   position: MapPoint;
   lotId: string;
@@ -126,3 +129,25 @@ export interface RealtimeSnapshot {
   /** lotId → 마지막 업데이트 시각(epoch ms) */
   updatedAt: Record<string, number>;
 }
+
+/** 구역 추천 순위 항목 */
+export interface RankedZone {
+  zone: ZoneSummary;
+  walkMinutes: number;
+  score: number;
+  /** 혼잡(여유면 ≤ busyMax) 구역은 선택 불가 */
+  selectable: boolean;
+}
+
+/** 주차장 추천 순위 항목 (구역 데이터가 없는 목적지용) */
+export interface RankedLot {
+  lot: LotSummary;
+  walkMinutes: number;
+  score: number;
+  selectable: boolean;
+}
+
+/** 목적지 선택 결과: 구역 단위 추천 또는 주차장 단위 추천 */
+export type DestinationPlan =
+  | { kind: 'zone'; destination: Destination; lot: LotSummary; ranked: RankedZone[]; recommended: RankedZone | null }
+  | { kind: 'lot'; destination: Destination; ranked: RankedLot[]; recommended: RankedLot | null };

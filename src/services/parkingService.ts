@@ -5,12 +5,14 @@
  */
 import { CONFIG } from '@/lib/config';
 import { createRng } from '@/lib/random';
-import { recommendZone } from '@/lib/recommend';
+import { rankLots, rankZones, recommendZone } from '@/lib/recommend';
 import { createBaseline, simulateStep, startTicker } from '@/lib/simulator';
 import { getCongestion, summarizeZones, sumAvailable } from '@/lib/status';
 import type {
   Destination,
+  DestinationPlan,
   LotSummary,
+  MapPoint,
   ParkingLot,
   RealtimeSnapshot,
   Recommendation,
@@ -101,9 +103,19 @@ export function subscribeRealtime(listener: Listener): () => void {
   };
 }
 
+/** 두 지점 거리(m) */
+export function distanceBetween(a: MapPoint, b: MapPoint) {
+  return Math.round(Math.hypot(a.x - b.x, a.y - b.y) * CONFIG.map.metersPerUnit);
+}
+
 /** 현재 위치 → 지점 거리(m) */
-export function distanceFromCurrent(p: { x: number; y: number }) {
-  return Math.round(Math.hypot(p.x - CURRENT_LOCATION.x, p.y - CURRENT_LOCATION.y) * CONFIG.map.metersPerUnit);
+export function distanceFromCurrent(p: MapPoint) {
+  return distanceBetween(p, CURRENT_LOCATION);
+}
+
+/** 도보 시간(분, 최소 1분) */
+export function walkMinutesBetween(a: MapPoint, b: MapPoint) {
+  return Math.max(1, Math.round(distanceBetween(a, b) / CONFIG.map.walkMetersPerMinute));
 }
 
 /** 스냅샷 → 주차장 요약. 칸 데이터가 있으면 전체 여유면 = 구역별 여유면 합계. */
@@ -159,6 +171,38 @@ export function getRecommendation(
   const summary = getLotSummary(dest.lotId, snap);
   if (!summary || summary.zoneSummaries.length === 0) return null;
   return recommendZone(dest.lotId, destinationId, summary.zoneSummaries, getSlots(dest.lotId, snap), DEMO_SLOT_ID);
+}
+
+/**
+ * 목적지 선택 결과.
+ * - 목적지 전용 주차장에 구역 데이터가 있으면: 구역 단위 순위 (제1공학관 주차장 A~D)
+ * - 없으면: 주변 주차장 단위 순위 (목적지까지 도보 시간 기준)
+ */
+export function getDestinationPlan(destinationId: string, snap: RealtimeSnapshot = snapshot): DestinationPlan | null {
+  const destination = getDestination(destinationId);
+  if (!destination) return null;
+  const lot = getLotSummary(destination.lotId, snap);
+  if (!lot) return null;
+
+  if (lot.zoneSummaries.length > 0) {
+    const ranked = rankZones(lot.zoneSummaries, destinationId);
+    return { kind: 'zone', destination, lot, ranked, recommended: ranked.find((r) => r.selectable) ?? null };
+  }
+
+  const candidates = getLotSummaries(snap)
+    .map((l) => ({ lot: l, walkMinutes: walkMinutesBetween(l.position, destination.position) }))
+    .filter(
+      ({ lot: l }) =>
+        l.id === destination.lotId ||
+        distanceBetween(l.position, destination.position) <= CONFIG.recommend.lotMaxDistanceM,
+    );
+  const ranked = rankLots(candidates);
+  return {
+    kind: 'lot',
+    destination,
+    ranked,
+    recommended: ranked.find((r) => r.selectable && r.lot.availableSpaces !== null) ?? null,
+  };
 }
 
 // ---- 변경 ----

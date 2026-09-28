@@ -2,7 +2,7 @@ import type { ParkingLot } from '@/lib/types';
 
 /**
  * 제1공학관 주차장 (데모 메인). 총 640면 = A160 + B220 + C120 + D140
- * 구역별 도보 시간은 목적지 '제1공학관' 기준.
+ * 구역별 도보 시간(walkMinutesTo)은 목적지별 값. 제1공학관 보행 출입구는 B구역 쪽에 있다.
  */
 export const MAIN_LOT: ParkingLot = {
   id: 'skku-eng1',
@@ -27,10 +27,10 @@ export const MAIN_LOT: ParkingLot = {
   },
   photos: [],
   zones: [
-    { id: 'A', name: 'A구역', color: 'green', totalSpaces: 160, rows: 8, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 3 } },
-    { id: 'B', name: 'B구역', color: 'blue', totalSpaces: 220, rows: 10, slotsPerRow: 22, walkMinutesTo: { 'eng1-building': 2 } },
-    { id: 'C', name: 'C구역', color: 'orange', totalSpaces: 120, rows: 6, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 2 } },
-    { id: 'D', name: 'D구역', color: 'red', totalSpaces: 140, rows: 7, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 1 } },
+    { id: 'A', name: 'A구역', color: 'green', totalSpaces: 160, rows: 8, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 4, 'eng2-building': 3, 'semi-building': 1, library: 4 } },
+    { id: 'B', name: 'B구역', color: 'blue', totalSpaces: 220, rows: 10, slotsPerRow: 22, walkMinutesTo: { 'eng1-building': 2, 'eng2-building': 2, 'semi-building': 3, library: 3 } },
+    { id: 'C', name: 'C구역', color: 'orange', totalSpaces: 120, rows: 6, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 3, 'eng2-building': 4, 'semi-building': 3, library: 1 } },
+    { id: 'D', name: 'D구역', color: 'red', totalSpaces: 140, rows: 7, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 2, 'eng2-building': 3, 'semi-building': 4, library: 1 } },
   ],
 };
 

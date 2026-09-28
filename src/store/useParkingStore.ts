@@ -44,3 +44,11 @@ export function useRecommendation(destinationId: string) {
   const snapshot = useParkingStore((s) => s.snapshot);
   return useMemo(() => parkingService.getRecommendation(destinationId, snapshot), [destinationId, snapshot]);
 }
+
+export function useDestinationPlan(destinationId: string | null) {
+  const snapshot = useParkingStore((s) => s.snapshot);
+  return useMemo(
+    () => (destinationId ? parkingService.getDestinationPlan(destinationId, snapshot) : null),
+    [destinationId, snapshot],
+  );
+}
