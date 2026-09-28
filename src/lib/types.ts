@@ -32,8 +32,6 @@ export interface ParkingLot {
   shortName: string;
   address: string;
   position: MapPoint;
-  /** 현재 위치 기준 거리(m) */
-  distanceM: number;
   totalSpaces: number;
   /** AI Vision 실시간 제공 여부 */
   isRealtime: boolean;
@@ -81,6 +79,8 @@ export interface LotSummary extends ParkingLot {
   congestion: Congestion;
   zoneSummaries: ZoneSummary[];
   updatedAt: number | null;
+  /** 현재 위치 기준 거리(m), 지도 좌표로 계산 */
+  distanceM: number;
 }
 
 export interface Destination {

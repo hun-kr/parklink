@@ -26,7 +26,7 @@ export function ActionButton({
   className,
 }: ActionButtonProps) {
   const classes = cn(
-    'flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl text-[17px] font-bold transition-colors',
+    'flex h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl text-[16.5px] font-bold transition-colors',
     VARIANT[variant],
     className,
   );

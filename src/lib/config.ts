@@ -27,5 +27,9 @@ export const CONFIG = {
     mainDestinationId: 'eng1-building',
     plateNumber: '123가 4567',
   },
+  /** 가상 지도 좌표 1단위 = 1.5m */
+  map: {
+    metersPerUnit: 1.5,
+  },
   storageKey: 'parklink:my-car',
 } as const;

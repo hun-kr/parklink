@@ -101,10 +101,16 @@ export function subscribeRealtime(listener: Listener): () => void {
   };
 }
 
+/** 현재 위치 → 지점 거리(m) */
+export function distanceFromCurrent(p: { x: number; y: number }) {
+  return Math.round(Math.hypot(p.x - CURRENT_LOCATION.x, p.y - CURRENT_LOCATION.y) * CONFIG.map.metersPerUnit);
+}
+
 /** 스냅샷 → 주차장 요약. 칸 데이터가 있으면 전체 여유면 = 구역별 여유면 합계. */
 export function buildLotSummary(lot: ParkingLot, snap: RealtimeSnapshot): LotSummary {
   const slots = snap.slots[lot.id];
   const updatedAt = snap.updatedAt[lot.id] ?? null;
+  const distanceM = distanceFromCurrent(lot.position);
 
   if (lot.zones && slots) {
     const zoneSummaries = summarizeZones(lot.zones, slots);
@@ -115,6 +121,7 @@ export function buildLotSummary(lot: ParkingLot, snap: RealtimeSnapshot): LotSum
       congestion: getCongestion(availableSpaces, lot.totalSpaces),
       zoneSummaries,
       updatedAt,
+      distanceM,
     };
   }
 
@@ -125,6 +132,7 @@ export function buildLotSummary(lot: ParkingLot, snap: RealtimeSnapshot): LotSum
     congestion: getCongestion(availableSpaces, lot.totalSpaces),
     zoneSummaries: [],
     updatedAt: lot.isRealtime ? updatedAt : null,
+    distanceM,
   };
 }
 

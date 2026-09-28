@@ -1,4 +1,4 @@
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 /**
@@ -12,6 +12,7 @@ export default function PhotoPlaceholder({
   counter,
   className,
   iconSize = 28,
+  icon: Icon = ImageIcon,
 }: {
   src?: string;
   alt?: string;
@@ -19,6 +20,7 @@ export default function PhotoPlaceholder({
   counter?: string;
   className?: string;
   iconSize?: number;
+  icon?: LucideIcon;
 }) {
   return (
     <div className={cn('relative overflow-hidden bg-[#E3E7EE]', className)}>
@@ -27,7 +29,7 @@ export default function PhotoPlaceholder({
         <img src={src} alt={alt} className="h-full w-full object-cover" />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-[#E6EAF0] to-[#D5DBE5] text-[#9AA4B5]">
-          <ImageIcon size={iconSize} strokeWidth={1.6} />
+          <Icon size={iconSize} strokeWidth={1.6} />
         </div>
       )}
       {label && (

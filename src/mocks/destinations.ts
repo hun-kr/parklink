@@ -1,9 +1,9 @@
 import type { Destination, MapPoint } from '@/lib/types';
 
-/** Mock 현재 위치: 성균관대학교 자연과학캠퍼스 정문 앞 */
+/** Mock 현재 위치: 성균관대학교 자연과학캠퍼스 안 (가상 지도 좌표) */
 export const CURRENT_LOCATION: MapPoint & { label: string } = {
-  x: 540,
-  y: 700,
+  x: 500,
+  y: 500,
   label: '성균관대학교 자연과학캠퍼스 정문 앞',
 };
 
@@ -13,7 +13,7 @@ export const DESTINATIONS: Destination[] = [
     name: '제1공학관',
     category: '강의동',
     address: '성균관대학교 자연과학캠퍼스',
-    position: { x: 600, y: 500 },
+    position: { x: 595, y: 422 },
     lotId: 'skku-eng1',
   },
   {
@@ -21,23 +21,23 @@ export const DESTINATIONS: Destination[] = [
     name: '생명과학관',
     category: '강의동',
     address: '성균관대학교 자연과학캠퍼스',
-    position: { x: 170, y: 660 },
+    position: { x: 330, y: 530 },
     lotId: 'skku-life',
   },
   {
-    id: 'library',
-    name: '삼성학술정보관',
-    category: '도서관',
+    id: 'pharm-building',
+    name: '약학관',
+    category: '강의동',
     address: '성균관대학교 자연과학캠퍼스',
-    position: { x: 300, y: 820 },
-    lotId: 'skku-library',
+    position: { x: 260, y: 315 },
+    lotId: 'skku-pharm',
   },
   {
     id: 'stadium',
     name: '대운동장',
     category: '체육시설',
     address: '성균관대학교 자연과학캠퍼스',
-    position: { x: 800, y: 660 },
+    position: { x: 680, y: 570 },
     lotId: 'skku-stadium',
   },
 ];
