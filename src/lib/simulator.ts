@@ -34,11 +34,16 @@ function stepSlots(slots: Slot[], ctx: StepContext, lot: ParkingLot): Slot[] {
   const increase = ctx.rng() < increaseProbability(current, base);
   const delta = randomInt(ctx.rng, 1, CONFIG.simulation.maxDelta);
 
-  const from = increase ? 'occupied' : 'empty';
-  const to = increase ? 'empty' : 'occupied';
-  const candidates = slots.filter(
-    (s) => s.zone === zone.id && s.status === from && !ctx.lockedSlotIds.has(s.id),
-  );
+  const pick = (inc: boolean) =>
+    slots.filter((s) => s.zone === zone.id && s.status === (inc ? 'occupied' : 'empty') && !ctx.lockedSlotIds.has(s.id));
+  // 요청 방향으로 바꿀 칸이 없으면(예: 여유 0면에서 감소) 반대 방향으로
+  let dir = increase;
+  let candidates = pick(dir);
+  if (candidates.length === 0) {
+    dir = !dir;
+    candidates = pick(dir);
+  }
+  const to = dir ? 'empty' : 'occupied';
   const targets = new Set(shuffle(ctx.rng, candidates).slice(0, delta).map((s) => s.id));
   if (targets.size === 0) return slots;
   return slots.map((s) => (targets.has(s.id) ? { ...s, status: to } : s));
@@ -53,9 +58,12 @@ function stepCount(current: number, total: number, base: number, rng: Rng) {
 /** 시뮬레이션 1회 실행 → 새 스냅샷 (불변) */
 export function simulateStep(snapshot: RealtimeSnapshot, ctx: StepContext): RealtimeSnapshot {
   const realtimeLots = ctx.lots.filter((l) => l.isRealtime);
-  // 메인(칸 데이터) 주차장이 더 자주 바뀌도록 가중치
-  const weighted = realtimeLots.flatMap((l) => (l.zones ? [l, l, l, l] : [l]));
-  const lot = weighted[Math.floor(ctx.rng() * weighted.length)];
+  // 데모 무대인 칸 데이터 주차장(제1공학관)이 5~10초마다 눈에 보이게 바뀌도록 우선 선택
+  const zoned = realtimeLots.filter((l) => l.zones);
+  const others = realtimeLots.filter((l) => !l.zones);
+  const useZoned = zoned.length > 0 && (others.length === 0 || ctx.rng() < CONFIG.simulation.mainLotProbability);
+  const pool = useZoned ? zoned : others;
+  const lot = pool[Math.floor(ctx.rng() * pool.length)];
   if (!lot) return snapshot;
 
   if (lot.zones && snapshot.slots[lot.id]) {

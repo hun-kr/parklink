@@ -28,6 +28,15 @@ const config: Config = {
       maxWidth: {
         phone: '390px',
       },
+      keyframes: {
+        'slot-flash': {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+      },
+      animation: {
+        'slot-flash': 'slot-flash 1.6s ease-out forwards',
+      },
     },
   },
   plugins: [],

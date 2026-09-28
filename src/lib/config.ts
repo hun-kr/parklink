@@ -15,6 +15,8 @@ export const CONFIG = {
     maxIntervalMs: 10_000,
     /** 한 번에 변동하는 최대 면수 (1~maxDelta) */
     maxDelta: 2,
+    /** 매 회 칸 데이터 주차장(제1공학관)을 바꿀 확률. 나머지는 주변 실시간 주차장 */
+    mainLotProbability: 0.75,
     seed: 20661,
   },
   /** 추천 점수 = 여유면 × spaceWeight − 도보분 × walkWeight */

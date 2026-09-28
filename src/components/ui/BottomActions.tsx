@@ -8,6 +8,8 @@ export interface ActionButtonProps {
   href?: string;
   onClick?: () => void;
   variant?: 'primary' | 'success' | 'secondary';
+  /** sm: 긴 라벨용 작은 글자 */
+  size?: 'md' | 'sm';
   className?: string;
 }
 
@@ -23,16 +25,18 @@ export function ActionButton({
   href,
   onClick,
   variant = 'primary',
+  size = 'md',
   className,
 }: ActionButtonProps) {
   const classes = cn(
-    'flex h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl text-[16.5px] font-bold transition-colors',
+    'flex h-[52px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-bold tracking-[-0.02em] transition-colors',
+    size === 'sm' ? 'text-[15px]' : 'text-[16.5px]',
     VARIANT[variant],
     className,
   );
   const content = (
     <>
-      {Icon && <Icon size={22} strokeWidth={2.2} />}
+      {Icon && <Icon size={size === 'sm' ? 20 : 22} strokeWidth={2.2} className="shrink-0" />}
       {label}
     </>
   );
