@@ -32,6 +32,7 @@ export default function PhotoPlaceholder({
           <Icon size={iconSize} strokeWidth={1.6} />
         </div>
       )}
+      {label && <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" />}
       {label && (
         <span className="absolute bottom-2.5 left-3 text-[13px] font-semibold text-white drop-shadow">
           {label}

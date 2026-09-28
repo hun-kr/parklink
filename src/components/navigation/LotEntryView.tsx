@@ -6,20 +6,16 @@ import { FloorBase, SlotLayer, useSlotRects } from '@/components/parking/Parking
 import { buildRoute, pointAt, remainingPoints } from '@/lib/route';
 import type { MapPoint, Slot, ZoneDef, ZoneSummary } from '@/lib/types';
 import { ZONE_COLOR } from '@/lib/zoneColors';
-import { CAR_ENTRANCE, FLOOR, slotRect, zoneRect } from '@/mocks/lotFloorPlan';
+import { CAR_ENTRANCE, CORRIDOR_X, FLOOR, slotAisleY, slotRect, zoneRect } from '@/mocks/lotFloorPlan';
 
-/** A·B 와 C·D 사이 세로 통로 x 좌표 */
-const CORRIDOR_X = 222;
 /** A·C 사이 가로 차로 y 좌표 */
 const LANE_Y = CAR_ENTRANCE.y + 2;
 
 /** (출입구로 들어와) 가로 차로 → 세로 통로 → 칸 앞 통로 → 칸 안 */
 export function entryPath(zone: ZoneDef, slot: Slot): MapPoint[] {
   const r = slotRect(zone, slot.row, slot.index);
-  const z = zoneRect(zone);
   const cx = r.x + r.w / 2;
-  // 짝수 줄(쌍의 아래 줄)은 아래 통로, 홀수 줄은 위 통로에서 진입
-  const aisleY = (slot.row - 1) % 2 === 1 ? r.y + r.h + 6 : Math.max(z.y - 5, r.y - 6);
+  const aisleY = slotAisleY(zone, slot.row, slot.index);
   return [
     { x: CORRIDOR_X - 80, y: LANE_Y },
     { x: CORRIDOR_X, y: LANE_Y },

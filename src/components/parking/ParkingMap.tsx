@@ -2,10 +2,10 @@
 
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Layers, LocateFixed, Minus, Navigation2, Plus } from 'lucide-react';
+import { CarFront, Layers, LocateFixed, Minus, Navigation2, Plus } from 'lucide-react';
 import { usePanZoom } from '@/hooks/usePanZoom';
 import { cn } from '@/lib/cn';
-import type { Slot, SlotStatus, ZoneDef, ZoneId, ZoneSummary } from '@/lib/types';
+import type { MapPoint, Slot, SlotStatus, ZoneDef, ZoneId, ZoneSummary } from '@/lib/types';
 import { ZONE_COLOR } from '@/lib/zoneColors';
 import {
   ASPHALT,
@@ -13,6 +13,7 @@ import {
   CAR_ENTRANCE,
   FLOOR,
   PEDESTRIAN_GATE,
+  type Rect,
   ROADS,
   TREES,
   WALKWAY,
@@ -123,6 +124,12 @@ export default function ParkingMap({
   focusZone,
   onZoneSelect,
   highlightSlotId,
+  fitRect,
+  refitKey,
+  myCar,
+  walkPath,
+  walker,
+  showZoneLabels = true,
   className,
 }: {
   zones: ZoneSummary[];
@@ -130,6 +137,18 @@ export default function ParkingMap({
   focusZone: ZoneId | null;
   onZoneSelect: (zone: ZoneId | null) => void;
   highlightSlotId?: string | null;
+  /** 기본 보기 영역 (없으면 전체) */
+  fitRect?: Rect;
+  /** 값이 바뀌면 기본 보기로 되돌아감 */
+  refitKey?: number;
+  /** 내 차 위치 핀 (07 시안) */
+  myCar?: { slotId: string; title: string; subtitle: string };
+  /** 점선 도보 경로 */
+  walkPath?: MapPoint[];
+  /** 경로를 따라 걷는 점 */
+  walker?: MapPoint | null;
+  /** 구역 라벨 표시 (내 차 찾기에서는 숨김) */
+  showZoneLabels?: boolean;
   className?: string;
 }) {
   const zoneById = useMemo(() => Object.fromEntries(zones.map((z) => [z.id, z])) as Record<ZoneId, ZoneSummary>, [zones]);
@@ -149,14 +168,26 @@ export default function ParkingMap({
     },
   });
 
-  /** 전체 보기 */
+  /** 기본 보기: fitRect 가 있으면 그 영역, 없으면 폭 맞춤 전체 */
   const fitView = (animated = true) => {
     const size = { width: pz.width.get(), height: pz.height.get() };
-    const s = fitScale(size);
-    const center = { x: FLOOR.width / 2, y: Math.min(FLOOR.height / 2, size.height / 2 / s - 4) };
+    let s = fitScale(size);
+    let center = { x: FLOOR.width / 2, y: Math.min(FLOOR.height / 2, size.height / 2 / s - 4) };
+    if (fitRect) {
+      s = Math.max(s, Math.min((size.width * 0.9) / fitRect.w, (size.height * 0.8) / fitRect.h));
+      center = { x: fitRect.x + fitRect.w / 2, y: fitRect.y + fitRect.h / 2 };
+    }
     if (animated) pz.animateTo(center, s);
     else pz.jumpTo(center, s);
   };
+
+  const prevRefit = useRef(refitKey);
+  useEffect(() => {
+    if (prevRefit.current === refitKey) return;
+    prevRefit.current = refitKey;
+    if (fitted.current) fitView();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refitKey]);
 
   // 첫 크기 측정 시 폭에 맞춤
   const fitted = useRef(false);
@@ -205,6 +236,8 @@ export default function ParkingMap({
   const slotRects = useSlotRects(zoneDefs, slots);
   const rectById = useMemo(() => new Map(slotRects.map((r) => [r.slot.id, r.rect])), [slotRects]);
   const highlightRect = highlightSlotId ? rectById.get(highlightSlotId) : null;
+  const carRect = myCar ? rectById.get(myCar.slotId) : null;
+  const walkD = walkPath && walkPath.length > 1 ? walkPath.map((p, i) => `${i ? 'L' : 'M'} ${p.x} ${p.y}`).join(' ') : null;
 
   const ctrl = 'flex h-[42px] w-[42px] items-center justify-center bg-white text-ink active:bg-surface';
 
@@ -233,6 +266,22 @@ export default function ParkingMap({
                 />
               ) : null;
             })}
+            {/* 도보 경로 */}
+            {walkD && (
+              <>
+                <path d={walkD} fill="none" stroke="#fff" strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.9} />
+                <path d={walkD} fill="none" stroke="#1A63F0" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 3.5" />
+                <circle cx={walkPath![0].x} cy={walkPath![0].y} r={4} fill="#1A63F0" stroke="#fff" strokeWidth={1.5} />
+              </>
+            )}
+            {/* 내 차 칸 */}
+            {carRect && (
+              <>
+                <rect x={carRect.x - 3} y={carRect.y - 3} width={carRect.w + 6} height={carRect.h + 6} rx={2.5} fill="#16A34A" fillOpacity={0.35} />
+                <rect x={carRect.x - 1} y={carRect.y - 1} width={carRect.w + 2} height={carRect.h + 2} rx={1.5} fill="#2FBF63" stroke="#fff" strokeWidth={1.2} />
+              </>
+            )}
+            {walker && <circle cx={walker.x} cy={walker.y} r={4.2} fill="#1A63F0" stroke="#fff" strokeWidth={1.8} />}
             {highlightRect && (
               <rect
                 x={highlightRect.x - 2}
@@ -248,7 +297,7 @@ export default function ParkingMap({
           </svg>
 
           {/* 구역 라벨 (확대해도 크기 유지) */}
-          {zones.map((z) => {
+          {showZoneLabels && zones.map((z) => {
             const r = zoneRect(z);
             return (
               <div key={z.id} className="absolute" style={{ left: r.x + r.w / 2, top: r.y + Math.min(40, r.h / 2), zIndex: 10 }}>
@@ -258,6 +307,26 @@ export default function ParkingMap({
               </div>
             );
           })}
+
+          {/* 내 차 위치 핀 */}
+          {carRect && myCar && (
+            <div className="absolute" style={{ left: carRect.x + carRect.w / 2, top: carRect.y - 2, zIndex: 20 }}>
+              <motion.div style={{ scale: pz.inverse, originX: 0, originY: 0 }}>
+                <div className="pointer-events-none relative" style={{ transform: 'translate(-50%, calc(-100% - 9px))' }}>
+                  <div className="flex items-center gap-2 whitespace-nowrap rounded-[14px] border-2 border-white bg-available py-1.5 pl-1.5 pr-3 text-white shadow-[0_4px_12px_rgba(22,163,74,0.4)]">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white/70">
+                      <CarFront size={18} strokeWidth={2.2} />
+                    </span>
+                    <span className="leading-tight">
+                      <span className="block text-[14px] font-bold">{myCar.title}</span>
+                      <span className="block text-[11.5px] text-white/90">{myCar.subtitle}</span>
+                    </span>
+                  </div>
+                  <span className="absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-[7px] rotate-45 border-b-2 border-r-2 border-white bg-available" />
+                </div>
+              </motion.div>
+            </div>
+          )}
 
           {/* 출입구 */}
           <div className="absolute" style={{ left: CAR_ENTRANCE.x - 4, top: CAR_ENTRANCE.y, zIndex: 9 }}>
