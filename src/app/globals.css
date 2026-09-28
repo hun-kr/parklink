@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply bg-[#E9EDF3] text-ink antialiased;
+    font-family: theme('fontFamily.sans');
+    -webkit-tap-highlight-color: transparent;
+    word-break: keep-all;
+  }
+
+  button {
+    @apply select-none;
+  }
+}
+
+/* 버튼 눌림 효과: 모든 버튼 + .pressable 링크. scale 속성은 transform 과 별개라 위치 지정용 transform 과 충돌하지 않는다 */
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled),
+  .pressable {
+    transition-property: scale, background-color, border-color, color, opacity, box-shadow;
+    transition-duration: 0.14s;
+    transition-timing-function: ease-out;
+  }
+  button:not(:disabled):active,
+  .pressable:active {
+    scale: 0.96;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
