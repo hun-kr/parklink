@@ -1,0 +1,166 @@
+import type { ParkingLot } from '@/lib/types';
+
+/**
+ * 제1공학관 주차장 (데모 메인). 총 640면 = A160 + B220 + C120 + D140
+ * 구역별 도보 시간은 목적지 '제1공학관' 기준.
+ */
+export const MAIN_LOT: ParkingLot = {
+  id: 'skku-eng1',
+  name: '성균관대학교 제1공학관 주차장',
+  shortName: '제1공학관 주차장',
+  address: '경기도 수원시 장안구 서부로 2066',
+  position: { x: 520, y: 560 },
+  distanceM: 350,
+  totalSpaces: 640,
+  isRealtime: true,
+  tags: ['대학 주차장', '24시간 운영'],
+  amenities: {
+    open24h: true,
+    visitorAllowed: true,
+    evSpaces: 8,
+    disabledSpaces: 4,
+    heightLimitM: 2.3,
+  },
+  operation: {
+    hours: '24시간 연중무휴',
+    target: '교수 · 직원 · 학생 · 방문차량',
+    restriction: '높이 2.3m, 대형차량 일부 제한',
+  },
+  photos: [],
+  zones: [
+    { id: 'A', name: 'A구역', color: 'green', totalSpaces: 160, rows: 8, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 3 } },
+    { id: 'B', name: 'B구역', color: 'blue', totalSpaces: 220, rows: 10, slotsPerRow: 22, walkMinutesTo: { 'eng1-building': 2 } },
+    { id: 'C', name: 'C구역', color: 'orange', totalSpaces: 120, rows: 6, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 2 } },
+    { id: 'D', name: 'D구역', color: 'red', totalSpaces: 140, rows: 7, slotsPerRow: 20, walkMinutesTo: { 'eng1-building': 1 } },
+  ],
+};
+
+const UNIVERSITY_OPERATION = {
+  hours: '평일 07:00 ~ 23:00',
+  target: '교수 · 직원 · 학생 · 방문차량',
+  restriction: '높이 2.1m',
+};
+
+const PUBLIC_OPERATION = {
+  hours: '24시간',
+  target: '누구나',
+  restriction: '없음',
+};
+
+/** 주변 주차장 (실시간 / 일반 / 정보없음 혼합) */
+export const NEARBY_LOTS: ParkingLot[] = [
+  {
+    id: 'skku-life',
+    name: '성균관대학교 생명과학관 주차장',
+    shortName: '생명과학관 주차장',
+    address: '경기도 수원시 장안구 서부로 2066 생명과학관',
+    position: { x: 190, y: 700 },
+    distanceM: 420,
+    totalSpaces: 80,
+    isRealtime: true,
+    tags: ['대학 주차장'],
+    amenities: { open24h: false, visitorAllowed: true, evSpaces: 2, disabledSpaces: 2 },
+    operation: UNIVERSITY_OPERATION,
+    photos: [],
+  },
+  {
+    id: 'skku-library',
+    name: '성균관대학교 삼성학술정보관 주차장',
+    shortName: '삼성학술정보관 주차장',
+    address: '경기도 수원시 장안구 서부로 2066 삼성학술정보관',
+    position: { x: 330, y: 860 },
+    distanceM: 510,
+    totalSpaces: 60,
+    isRealtime: true,
+    tags: ['대학 주차장'],
+    amenities: { open24h: false, visitorAllowed: true, evSpaces: 2, disabledSpaces: 2 },
+    operation: UNIVERSITY_OPERATION,
+    photos: [],
+  },
+  {
+    id: 'skku-stadium',
+    name: '성균관대학교 대운동장 주차장',
+    shortName: '대운동장 주차장',
+    address: '경기도 수원시 장안구 서부로 2066 대운동장',
+    position: { x: 820, y: 620 },
+    distanceM: 640,
+    totalSpaces: 200,
+    isRealtime: true,
+    tags: ['대학 주차장'],
+    amenities: { open24h: true, visitorAllowed: true, evSpaces: 4, disabledSpaces: 4 },
+    operation: { ...UNIVERSITY_OPERATION, hours: '24시간' },
+    photos: [],
+  },
+  {
+    id: 'skku-dorm',
+    name: '성균관대학교 기숙사 주차장',
+    shortName: '기숙사 주차장',
+    address: '경기도 수원시 장안구 서부로 2066 기숙사',
+    position: { x: 780, y: 330 },
+    distanceM: 700,
+    totalSpaces: 50,
+    isRealtime: true,
+    tags: ['대학 주차장'],
+    amenities: { open24h: true, visitorAllowed: false, evSpaces: 0, disabledSpaces: 1 },
+    operation: { ...UNIVERSITY_OPERATION, hours: '24시간', target: '기숙사생 · 교직원' },
+    photos: [],
+  },
+  {
+    id: 'yuljeon-public',
+    name: '율전동 공영주차장',
+    shortName: '율전동 공영주차장',
+    address: '경기도 수원시 장안구 율전동 292',
+    position: { x: 640, y: 990 },
+    distanceM: 820,
+    totalSpaces: 40,
+    isRealtime: false,
+    tags: ['공영 주차장'],
+    amenities: { open24h: true, visitorAllowed: true, evSpaces: 2, disabledSpaces: 1 },
+    operation: PUBLIC_OPERATION,
+    photos: [],
+  },
+  {
+    id: 'skku-station',
+    name: '성균관대역 환승주차장',
+    shortName: '성균관대역 환승주차장',
+    address: '경기도 수원시 장안구 율전로 지하 1',
+    position: { x: 120, y: 1060 },
+    distanceM: 1100,
+    totalSpaces: 300,
+    isRealtime: false,
+    tags: ['환승 주차장'],
+    amenities: { open24h: false, visitorAllowed: true, evSpaces: 6, disabledSpaces: 6 },
+    operation: { ...PUBLIC_OPERATION, hours: '05:00 ~ 01:00' },
+    photos: [],
+  },
+  {
+    id: 'cheoncheon-private',
+    name: '천천동 민영주차장',
+    shortName: '천천동 민영주차장',
+    address: '경기도 수원시 장안구 천천동 581',
+    position: { x: 170, y: 330 },
+    distanceM: 950,
+    totalSpaces: 50,
+    isRealtime: false,
+    tags: ['민영 주차장'],
+    amenities: { open24h: false, visitorAllowed: true, evSpaces: 0, disabledSpaces: 1 },
+    operation: { ...PUBLIC_OPERATION, hours: '08:00 ~ 22:00' },
+    photos: [],
+  },
+];
+
+export const ALL_LOTS: ParkingLot[] = [MAIN_LOT, ...NEARBY_LOTS];
+
+/**
+ * 칸 데이터가 없는 주차장의 초기 여유면. null = 정보없음.
+ * 실시간이 아닌 주차장의 숫자는 '기준 정보'로 시뮬레이션하지 않는다.
+ */
+export const INITIAL_LOT_AVAILABLE: Record<string, number | null> = {
+  'skku-life': 18,
+  'skku-library': 7,
+  'skku-stadium': 32,
+  'skku-dorm': 2,
+  'yuljeon-public': 5,
+  'skku-station': null,
+  'cheoncheon-private': null,
+};

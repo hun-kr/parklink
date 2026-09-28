@@ -8,6 +8,7 @@
     @apply bg-[#E9EDF3] text-ink antialiased;
     font-family: theme('fontFamily.sans');
     -webkit-tap-highlight-color: transparent;
+    word-break: keep-all;
   }
 
   button {
