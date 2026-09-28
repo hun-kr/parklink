@@ -28,7 +28,7 @@ export const SLOT_FILL: Record<SlotStatus, string> = {
 };
 
 /** 정적 배경 (도로·나무·건물·구역 테두리) */
-const FloorBase = memo(function FloorBase({ zones }: { zones: ZoneDef[] }) {
+export const FloorBase = memo(function FloorBase({ zones }: { zones: ZoneDef[] }) {
   return (
     <>
       <rect x={0} y={0} width={FLOOR.width} height={FLOOR.height} fill="#8DBF7F" />
@@ -58,6 +58,37 @@ const FloorBase = memo(function FloorBase({ zones }: { zones: ZoneDef[] }) {
     </>
   );
 });
+
+/** 칸 레이어: 칸 상태 색 (색 변화는 부드럽게) */
+export function SlotLayer({ items }: { items: { slot: Slot; rect: { x: number; y: number; w: number; h: number } | null }[] }) {
+  return (
+    <g stroke="#ffffff" strokeOpacity={0.85} strokeWidth={0.6}>
+      {items.map(({ slot, rect }) =>
+        rect ? (
+          <rect
+            key={slot.id}
+            data-zone={slot.zone}
+            data-status={slot.status}
+            x={rect.x}
+            y={rect.y}
+            width={rect.w}
+            height={rect.h}
+            fill={SLOT_FILL[slot.status]}
+            style={{ transition: 'fill 0.6s ease' }}
+          />
+        ) : null,
+      )}
+    </g>
+  );
+}
+
+/** 구역 정의 + 칸 → 칸 좌표 */
+export function useSlotRects(zones: ZoneDef[], slots: Slot[]) {
+  return useMemo(() => {
+    const byId = Object.fromEntries(zones.map((z) => [z.id, z])) as Record<ZoneId, ZoneDef>;
+    return slots.map((s) => ({ slot: s, rect: byId[s.zone] ? slotRect(byId[s.zone], s.row, s.index) : null }));
+  }, [zones, slots]);
+}
 
 function ZoneLabel({ zone, active, onClick }: { zone: ZoneSummary; active: boolean; onClick: () => void }) {
   const c = ZONE_COLOR[zone.color];
@@ -171,12 +202,7 @@ export default function ParkingMap({
     if (changed.length > 0) setFlash((f) => ({ ids: changed, v: f.v + 1 }));
   }, [slots]);
 
-  const slotRects = useMemo(
-    () => slots.map((s) => ({ slot: s, rect: zoneById[s.zone] ? slotRect(zoneById[s.zone], s.row, s.index) : null })),
-    // 칸 위치는 구역 정의에만 의존
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [slots, zoneDefs],
-  );
+  const slotRects = useSlotRects(zoneDefs, slots);
   const rectById = useMemo(() => new Map(slotRects.map((r) => [r.slot.id, r.rect])), [slotRects]);
   const highlightRect = highlightSlotId ? rectById.get(highlightSlotId) : null;
 
@@ -188,24 +214,7 @@ export default function ParkingMap({
         <motion.div className="absolute left-0 top-0 origin-top-left will-change-transform" style={{ transform: pz.transform }}>
           <svg width={FLOOR.width} height={FLOOR.height} viewBox={`0 0 ${FLOOR.width} ${FLOOR.height}`} className="absolute left-0 top-0" aria-hidden>
             <FloorBase zones={zoneDefs} />
-            {/* 칸 */}
-            <g stroke="#ffffff" strokeOpacity={0.85} strokeWidth={0.6}>
-              {slotRects.map(({ slot, rect }) =>
-                rect ? (
-                  <rect
-                    key={slot.id}
-                    data-zone={slot.zone}
-                    data-status={slot.status}
-                    x={rect.x}
-                    y={rect.y}
-                    width={rect.w}
-                    height={rect.h}
-                    fill={SLOT_FILL[slot.status]}
-                    style={{ transition: 'fill 0.6s ease' }}
-                  />
-                ) : null,
-              )}
-            </g>
+            <SlotLayer items={slotRects} />
             {/* 방금 바뀐 칸 */}
             {flash.ids.map((id) => {
               const r = rectById.get(id);

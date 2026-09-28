@@ -35,11 +35,14 @@ export function usePanZoom({
   initialScale,
   getLimits,
   onViewChangeEnd,
+  onGestureStart,
 }: {
   initialCenter: MapPoint;
   initialScale: number;
   getLimits: (size: { width: number; height: number }) => PanZoomLimits;
   onViewChangeEnd?: (view: PanZoomView, visible: PanZoomBounds) => void;
+  /** 드래그·핀치·휠로 사용자가 직접 움직이기 시작할 때 */
+  onGestureStart?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cx = useMotionValue(initialCenter.x);
@@ -57,6 +60,8 @@ export function usePanZoom({
   getLimitsRef.current = getLimits;
   const onViewChangeEndRef = useRef(onViewChangeEnd);
   onViewChangeEndRef.current = onViewChangeEnd;
+  const onGestureStartRef = useRef(onGestureStart);
+  onGestureStartRef.current = onGestureStart;
 
   const limits = useCallback(() => getLimitsRef.current({ width: width.get(), height: height.get() }), [width, height]);
 
@@ -198,6 +203,7 @@ export function usePanZoom({
     if (!g.moved) {
       g.moved = true;
       containerRef.current?.setPointerCapture(e.pointerId);
+      onGestureStartRef.current?.();
     }
 
     let s = g.s0;
@@ -247,6 +253,7 @@ export function usePanZoom({
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       stopAll();
+      onGestureStartRef.current?.();
       const rect = el.getBoundingClientRect();
       const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       const s0 = scale.get();

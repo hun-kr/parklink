@@ -20,6 +20,9 @@ export const useMyCarStore = create<MyCarState>()(
       myParking: null,
       hydrated: false,
       park: (input) => {
+        // 이미 저장된 위치가 있으면 먼저 비운다 (다른 칸으로 다시 주차)
+        const prev = get().myParking;
+        if (prev && prev.slotId !== input.slotId) parkingService.releaseSlot(prev.lotId, prev.slotId);
         const myParking: MyParking = {
           ...input,
           plateNumber: CONFIG.demo.plateNumber,

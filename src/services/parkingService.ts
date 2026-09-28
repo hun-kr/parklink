@@ -21,6 +21,7 @@ import type {
 import { CURRENT_LOCATION, DESTINATIONS } from '@/mocks/destinations';
 import { DEMO_SLOT_ID, generateSlots } from '@/mocks/lotLayout';
 import { ALL_LOTS, INITIAL_LOT_AVAILABLE } from '@/mocks/lots';
+import { NAV_ROUTES, NAV_START, fallbackRoute } from '@/mocks/navRoutes';
 
 type Listener = (snapshot: RealtimeSnapshot) => void;
 
@@ -38,6 +39,8 @@ const baseline = createBaseline(ALL_LOTS, snapshot);
 const listeners = new Set<Listener>();
 /** 시뮬레이터가 건드리지 않는 칸: 데모 안내 목표 칸 + 내 차가 주차된 칸 */
 const lockedSlotIds = new Set<string>([DEMO_SLOT_ID]);
+/** 내 차가 주차된 칸 (예약 해제로 풀리지 않도록 따로 관리) */
+const parkedSlotIds = new Set<string>();
 const rng = createRng(Date.now() >>> 0);
 let stopTicker: (() => void) | null = null;
 
@@ -205,13 +208,36 @@ export function getDestinationPlan(destinationId: string, snap: RealtimeSnapshot
   };
 }
 
+/** 길안내 경로 (Mock). 추후 실제 길찾기 API 로 교체 */
+export function getNavRoute(lotId: string): MapPoint[] {
+  const lot = getLot(lotId);
+  if (!lot) return [];
+  return NAV_ROUTES[lotId] ?? fallbackRoute(lot.position);
+}
+
+export function getNavStart() {
+  return NAV_START;
+}
+
 // ---- 변경 ----
+
+/** 안내 중인 목표 칸이 시뮬레이터에 의해 채워지지 않도록 예약 */
+export function reserveSlot(slotId: string) {
+  lockedSlotIds.add(slotId);
+}
+
+/** 예약 해제 (주차된 칸·데모 칸은 계속 고정) */
+export function releaseReservation(slotId: string) {
+  if (slotId === DEMO_SLOT_ID || parkedSlotIds.has(slotId)) return;
+  lockedSlotIds.delete(slotId);
+}
 
 /** 주차 완료: 해당 칸을 '주차중'으로 고정한다 */
 export function parkAt(lotId: string, slotId: string) {
   const slots = snapshot.slots[lotId];
   if (!slots) return;
   lockedSlotIds.add(slotId);
+  parkedSlotIds.add(slotId);
   emit({
     ...snapshot,
     slots: {
@@ -227,6 +253,7 @@ export function parkAt(lotId: string, slotId: string) {
  * 데모 칸은 다시 비워서 안내 목표로 고정(데모 반복 가능), 그 외 칸은 고정만 해제한다.
  */
 export function releaseSlot(lotId: string, slotId: string) {
+  parkedSlotIds.delete(slotId);
   if (slotId !== DEMO_SLOT_ID) {
     lockedSlotIds.delete(slotId);
     return;

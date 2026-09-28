@@ -39,5 +39,18 @@ export const CONFIG = {
     /** 도보 속도 (m/분) */
     walkMetersPerMinute: 75,
   },
+  /** 길안내 데모 연출 */
+  nav: {
+    /** 지도에서 주차장 입구까지 주행 시간 */
+    driveMs: 14_000,
+    /** 주차장 안에서 칸으로 들어가는 시간 */
+    enterMs: 4_500,
+    /** '주차 완료' 표시 후 이동까지 */
+    doneMs: 1_500,
+    /** 남은 시간 계산용 평균 속도 (m/분) */
+    speedMetersPerMinute: 400,
+    /** 주행 중 지도 배율 */
+    followScale: 1.15,
+  },
   storageKey: 'parklink:my-car',
 } as const;
