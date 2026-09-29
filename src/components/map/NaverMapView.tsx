@@ -281,7 +281,10 @@ export default function NaverMapView({
   );
 
   return (
-    <div ref={containerRef} className={cn('absolute inset-0 isolate overflow-clip bg-[#F1F2EE]', className)}>
+    // 네이버 지도는 지도 요소에 position: relative 를 강제하므로, 위치 지정은 바깥 래퍼가 맡고
+    // 지도 요소는 래퍼를 100% 로 채운다 (지도 요소에 absolute inset-0 을 주면 높이가 0 이 된다)
+    <div className={cn('absolute inset-0 isolate overflow-clip bg-[#F1F2EE]', className)}>
+      <div ref={containerRef} className="h-full w-full" />
       {ready && allMarkers.map((m) => createPortal(m.element, containerFor(m.id), m.id))}
     </div>
   );
