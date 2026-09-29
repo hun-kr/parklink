@@ -17,6 +17,12 @@ const ME_ID = '__current-location';
 /** 마커를 누른 직후 들어오는 지도 click 은 무시한다 (마커 선택 → 바로 선택 해제 방지) */
 const MARKER_TAP_GUARD_MS = 400;
 
+/** 네이버 LatLng 은 (위도, 경도) 숫자 인자로 만든다 (객체 인자는 런타임에서 지원되지 않을 수 있음) */
+const toNaverLatLng = (p: MapPoint) => {
+  const { lat, lng } = toLatLng(p);
+  return new naver.maps.LatLng(lat, lng);
+};
+
 const clampZoom = (z: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(z)));
 
 interface MarkerEntry {
@@ -78,6 +84,7 @@ export default function NaverMapView({
 
     const fallback = (reason: string) => {
       if (cancelled) return;
+      console.warn(`[ParkLink] 가상 지도로 대체: ${reason}`);
       setProvider('virtual', reason);
     };
 
@@ -85,7 +92,7 @@ export default function NaverMapView({
       .then((maps) => {
         if (cancelled) return;
         const map = new maps.Map(container, {
-          center: new maps.LatLng(toLatLng(initialView.center)),
+          center: toNaverLatLng(initialView.center),
           zoom: clampZoom(scaleToZoom(initialView.scale)),
           minZoom: MIN_ZOOM,
           maxZoom: MAX_ZOOM,
@@ -97,6 +104,13 @@ export default function NaverMapView({
           logoControlOptions: { position: maps.Position.LEFT_CENTER },
         });
         mapRef.current = map;
+        const c = map.getCenter();
+        if (!Number.isFinite(c.x) || !Number.isFinite(c.y)) {
+          map.destroy();
+          mapRef.current = null;
+          fallback('네이버 지도 좌표 초기화 실패');
+          return;
+        }
 
         const view = (): MapViewState => ({
           center: toMapPoint({ lat: map.getCenter().y, lng: map.getCenter().x }),
@@ -166,7 +180,7 @@ export default function NaverMapView({
       seen.add(m.id);
       const entry = markerEntries.current.get(m.id);
       if (!entry) continue;
-      const position = new naver.maps.LatLng(toLatLng(m.position));
+      const position = toNaverLatLng(m.position);
       const zIndex = 10 + (m.zIndex ?? 0);
       if (!entry.marker) {
         entry.marker = new naver.maps.Marker({
@@ -199,7 +213,7 @@ export default function NaverMapView({
     const seen = new Set<string>();
     for (const l of lines) {
       seen.add(l.id);
-      const path = l.points.map((p: MapPoint) => new naver.maps.LatLng(toLatLng(p)));
+      const path = l.points.map((p: MapPoint) => toNaverLatLng(p));
       const entry = lineEntries.current.get(l.id);
       if (entry) {
         entry.line.setPath(path);
@@ -229,7 +243,7 @@ export default function NaverMapView({
     const h = containerRef.current?.clientHeight ?? 0;
     const sp = options?.screenPoint ?? { x: w / 2, y: h / 2 };
     const center = { x: position.x + (w / 2 - sp.x) / s, y: position.y + (h / 2 - sp.y) / s };
-    return { latLng: new naver.maps.LatLng(toLatLng(center)), zoom };
+    return { latLng: toNaverLatLng(center), zoom };
   };
 
   useImperativeHandle(
