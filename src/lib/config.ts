@@ -61,6 +61,10 @@ export const CONFIG = {
     speedMetersPerMinute: 400,
     /** 주행 중 지도 배율 */
     followScale: 1.15,
+    /** S08 AI 재추천: 주행 진행률이 이 값에 이르면 목표 구역이 빠르게 차는 상황을 연출 */
+    rerouteAtProgress: 0.35,
+    /** 재추천 연출 때 목표 구역에 남기는 여유면 */
+    rerouteLeave: 2,
   },
   storageKey: 'parklink:my-car',
 } as const;

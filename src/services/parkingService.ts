@@ -17,6 +17,7 @@ import type {
   RealtimeSnapshot,
   Recommendation,
   Slot,
+  ZoneId,
 } from '@/lib/types';
 import { CURRENT_LOCATION, DESTINATIONS } from '@/mocks/destinations';
 import { DEMO_SLOT_ID, generateSlots } from '@/mocks/lotLayout';
@@ -246,6 +247,26 @@ export function parkAt(lotId: string, slotId: string) {
     },
     updatedAt: { ...snapshot.updatedAt, [lotId]: Date.now() },
   });
+}
+
+/**
+ * 데모 연출(S08 AI 재추천): 한 구역이 빠르게 차는 상황.
+ * 잠긴 칸(안내 목표·내 차)은 그대로 두고 여유면이 leave 면만 남도록 빈 칸을 채운다.
+ * 채운 뒤에는 시뮬레이터가 평소처럼 조금씩 되돌린다.
+ */
+export function rushZone(lotId: string, zoneId: ZoneId, leave: number): { before: number; after: number } {
+  const slots = snapshot.slots[lotId] ?? [];
+  const empty = slots.filter((s) => s.zone === zoneId && s.status === 'empty');
+  const fillable = empty.filter((s) => !lockedSlotIds.has(s.id));
+  const fill = new Set(fillable.slice(0, Math.max(0, empty.length - leave)).map((s) => s.id));
+  if (fill.size > 0) {
+    emit({
+      ...snapshot,
+      slots: { ...snapshot.slots, [lotId]: slots.map((s) => (fill.has(s.id) ? { ...s, status: 'occupied' } : s)) },
+      updatedAt: { ...snapshot.updatedAt, [lotId]: Date.now() },
+    });
+  }
+  return { before: empty.length, after: empty.length - fill.size };
 }
 
 /**
