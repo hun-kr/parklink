@@ -36,6 +36,16 @@ export const CONFIG = {
   /** 가상 지도 좌표 1단위 = 1.5m */
   map: {
     metersPerUnit: 1.5,
+    /**
+     * 네이버 지도 연동: 가상 지도 좌표 anchor.point 가 실제 위경도 anchor.latLng 에 놓인다.
+     * (북쪽 = -y, 동쪽 = +x, 1단위 = metersPerUnit m). 마커 위치가 실제 지도와 어긋나면 이 값을 조정한다.
+     */
+    geoAnchor: {
+      point: { x: 470, y: 460 },
+      latLng: { lat: 37.2939, lng: 126.975 },
+    },
+    /** 네이버 지도 스크립트 로드 제한 시간. 넘으면 가상 지도로 대체 */
+    naverLoadTimeoutMs: 8_000,
     /** 도보 속도 (m/분) */
     walkMetersPerMinute: 75,
   },
