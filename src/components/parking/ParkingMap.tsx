@@ -53,7 +53,7 @@ export const FloorBase = memo(function FloorBase({ zones }: { zones: ZoneDef[] }
       })}
       {/* 보행로 + 제1공학관 */}
       <path d={WALKWAY} stroke="#E8F6EC" strokeWidth={6} strokeLinecap="round" />
-      <path d={WALKWAY} stroke="#16A34A" strokeWidth={1.6} strokeDasharray="4 4" />
+      <path d={WALKWAY} stroke="#2FAF56" strokeWidth={1.6} strokeDasharray="4 4" />
       <rect x={BUILDING.x} y={BUILDING.y} width={BUILDING.w} height={BUILDING.h} rx={4} fill="#DDE1E7" stroke="#C3C9D1" />
       <rect x={BUILDING.x + 20} y={BUILDING.y + 10} width={BUILDING.w - 60} height={BUILDING.h - 20} rx={3} fill="#E9ECF0" />
     </>
@@ -277,7 +277,7 @@ export default function ParkingMap({
             {/* 내 차 칸 */}
             {carRect && (
               <>
-                <rect x={carRect.x - 3} y={carRect.y - 3} width={carRect.w + 6} height={carRect.h + 6} rx={2.5} fill="#16A34A" fillOpacity={0.35} />
+                <rect x={carRect.x - 3} y={carRect.y - 3} width={carRect.w + 6} height={carRect.h + 6} rx={2.5} fill="#2FAF56" fillOpacity={0.35} />
                 <rect x={carRect.x - 1} y={carRect.y - 1} width={carRect.w + 2} height={carRect.h + 2} rx={1.5} fill="#2FBF63" stroke="#fff" strokeWidth={1.2} />
               </>
             )}
@@ -313,7 +313,7 @@ export default function ParkingMap({
             <div className="absolute" style={{ left: carRect.x + carRect.w / 2, top: carRect.y - 2, zIndex: 20 }}>
               <motion.div style={{ scale: pz.inverse, originX: 0, originY: 0 }}>
                 <div className="pointer-events-none relative" style={{ transform: 'translate(-50%, calc(-100% - 9px))' }}>
-                  <div className="flex items-center gap-2 whitespace-nowrap rounded-[14px] border-2 border-white bg-available py-1.5 pl-1.5 pr-3 text-white shadow-[0_4px_12px_rgba(22,163,74,0.4)]">
+                  <div className="flex items-center gap-2 whitespace-nowrap rounded-[14px] border-2 border-white bg-available py-1.5 pl-1.5 pr-3 text-white shadow-[0_4px_12px_rgba(47,175,86,0.4)]">
                     <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white/70">
                       <CarFront size={18} strokeWidth={2.2} />
                     </span>

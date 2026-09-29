@@ -56,7 +56,7 @@ export function ZoneRecommendCard({
 }) {
   const color = ZONE_COLOR[target.zone.color];
   return (
-    <div className="rounded-card border-[1.5px] border-primary/40 bg-white p-4 shadow-[0_4px_18px_rgba(10,91,217,0.10)]">
+    <div className="rounded-card border-[1.5px] border-primary/40 bg-white p-4 shadow-[0_4px_18px_rgba(30,94,235,0.10)]">
       <Header isRecommended={isRecommended} onReset={onReset} status={<StatusBadge status={target.zone.congestion} size="sm" />} />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={target.zone.id} {...cardMotion}>
@@ -98,7 +98,7 @@ export function LotRecommendCard({
 }) {
   const { lot } = target;
   return (
-    <div className="rounded-card border-[1.5px] border-primary/40 bg-white p-4 shadow-[0_4px_18px_rgba(10,91,217,0.10)]">
+    <div className="rounded-card border-[1.5px] border-primary/40 bg-white p-4 shadow-[0_4px_18px_rgba(30,94,235,0.10)]">
       <Header isRecommended={isRecommended} onReset={onReset} status={<StatusBadge status={lot.congestion} size="sm" />} />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={lot.id} {...cardMotion}>

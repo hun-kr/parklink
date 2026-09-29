@@ -30,8 +30,8 @@ export default function ZoneMiniMap({ zones, highlight }: { zones: ZoneSummary[]
       <rect x={12} y={0} width={132} height={88} rx={10} fill="#EEF1F5" />
 
       {/* 차량 출입구 */}
-      <path d="M 0 44 L 10 44" stroke="#0A5BD9" strokeWidth={2.4} strokeLinecap="round" />
-      <path d="M 6 40 L 11 44 L 6 48" fill="none" stroke="#0A5BD9" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M 0 44 L 10 44" stroke="#1E5EEB" strokeWidth={2.4} strokeLinecap="round" />
+      <path d="M 6 40 L 11 44 L 6 48" fill="none" stroke="#1E5EEB" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
 
       {zones.map((z) => {
         const c = CELL[z.id];
@@ -71,16 +71,16 @@ export default function ZoneMiniMap({ zones, highlight }: { zones: ZoneSummary[]
       <path
         d={`M ${startX} ${startY} L ${startX} ${laneY} L ${GATE.x} ${laneY} L ${GATE.x} ${GATE.y + 9}`}
         fill="none"
-        stroke="#111A2E"
+        stroke="#111827"
         strokeOpacity={0.55}
         strokeWidth={1.6}
         strokeDasharray="3 3"
         strokeLinejoin="round"
       />
-      <circle cx={startX} cy={startY} r={2.6} fill="#fff" stroke="#111A2E" strokeWidth={1.4} />
+      <circle cx={startX} cy={startY} r={2.6} fill="#fff" stroke="#111827" strokeWidth={1.4} />
 
       {/* 보행 출입구 */}
-      <circle cx={GATE.x} cy={GATE.y} r={9} fill="#16A34A" />
+      <circle cx={GATE.x} cy={GATE.y} r={9} fill="#2FAF56" />
       <g transform={`translate(${GATE.x - 5} ${GATE.y - 6}) scale(0.42)`} fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
         <circle cx="13" cy="4" r="2" />
         <path d="M4 17l5 1l.75 -1.5" />
@@ -93,7 +93,7 @@ export default function ZoneMiniMap({ zones, highlight }: { zones: ZoneSummary[]
       <text x={131} y={101} textAnchor="middle" fontSize={8.5} fontWeight={700} fill="#4B5563">
         제1공학관
       </text>
-      <path d={`M ${GATE.x} ${laneY} L ${GATE.x} 92`} stroke="#16A34A" strokeWidth={1.6} strokeDasharray="2 2" />
+      <path d={`M ${GATE.x} ${laneY} L ${GATE.x} 92`} stroke="#2FAF56" strokeWidth={1.6} strokeDasharray="2 2" />
     </svg>
   );
 }

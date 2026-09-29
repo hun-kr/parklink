@@ -19,7 +19,7 @@ export default function MapControls({
   onNavigate?: () => void;
   showNavigate?: boolean;
 }) {
-  const shadow = 'shadow-[0_2px_10px_rgba(17,26,46,0.14)]';
+  const shadow = 'shadow-[0_2px_10px_rgba(17,24,39,0.14)]';
   return (
     <div className="flex flex-col items-end gap-4">
       <button type="button" aria-label="현재 위치" onClick={onLocate} className={cn(BTN, 'rounded-[14px]', shadow)}>
