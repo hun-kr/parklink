@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 
 /** 06 시안: 초록 체크 + 퍼지는 조각 애니메이션 */
 const PIECES = [
-  { angle: -60, dist: 78, color: '#16A34A' },
+  { angle: -60, dist: 78, color: '#2FAF56' },
   { angle: -20, dist: 84, color: '#34D399' },
-  { angle: 20, dist: 82, color: '#16A34A' },
+  { angle: 20, dist: 82, color: '#2FAF56' },
   { angle: 60, dist: 76, color: '#34D399' },
-  { angle: 120, dist: 80, color: '#16A34A' },
+  { angle: 120, dist: 80, color: '#2FAF56' },
   { angle: 160, dist: 84, color: '#34D399' },
-  { angle: 200, dist: 80, color: '#16A34A' },
+  { angle: 200, dist: 80, color: '#2FAF56' },
   { angle: 240, dist: 78, color: '#34D399' },
 ];
 
@@ -40,7 +40,7 @@ export default function CheckBurst() {
       })}
       {/* 체크 원 */}
       <motion.span
-        className="absolute inset-[22px] flex items-center justify-center rounded-full bg-available shadow-[0_6px_18px_rgba(22,163,74,0.35)]"
+        className="absolute inset-[22px] flex items-center justify-center rounded-full bg-available shadow-[0_6px_18px_rgba(47,175,86,0.35)]"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.1 }}

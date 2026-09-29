@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ChevronRight, Copy, MapPin, SquareArrowOutUpRight } from 'lucide-react';
-import CampusMapSvg from '@/components/map/CampusMapSvg';
+import MapView, { type MapMarker } from '@/components/map/MapView';
 import type { LotSummary } from '@/lib/types';
 import { FOCUS_SCALE } from '@/mocks/mapFeatures';
 import { getDestinations } from '@/services/parkingService';
@@ -33,10 +33,22 @@ export default function AddressCard({ lot }: { lot: LotSummary }) {
     }
   };
 
-  const toPx = (p: { x: number; y: number }) => ({
-    left: `calc(50% + ${(p.x - lot.position.x) * PREVIEW_SCALE}px)`,
-    top: `calc(50% + ${(p.y - lot.position.y) * PREVIEW_SCALE}px)`,
-  });
+  const markers: MapMarker[] = building
+    ? [
+        {
+          id: 'building',
+          position: building.position,
+          element: (
+            <span
+              className="block -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-[12.5px] font-semibold text-ink-sub"
+              style={{ textShadow: '0 0 3px #fff, 0 0 3px #fff' }}
+            >
+              {building.name}
+            </span>
+          ),
+        },
+      ]
+    : [];
 
   return (
     <div className="rounded-2xl border border-line bg-white p-3.5 shadow-card">
@@ -54,20 +66,10 @@ export default function AddressCard({ lot }: { lot: LotSummary }) {
       </div>
 
       <button type="button" onClick={openOnMap} className="relative mt-3 block h-[118px] w-full overflow-clip rounded-xl bg-[#F1F2EE] text-left" aria-label="지도에서 보기">
-        <div
-          className="pointer-events-none absolute left-1/2 top-1/2 origin-top-left"
-          style={{ transform: `scale(${PREVIEW_SCALE}) translate(${-lot.position.x}px, ${-lot.position.y}px)` }}
-        >
-          <CampusMapSvg />
+        {/* 미리보기 지도: 조작 없이 보기만 한다 */}
+        <div className="pointer-events-none absolute inset-0">
+          <MapView initialView={{ center: lot.position, scale: PREVIEW_SCALE }} markers={markers} />
         </div>
-        {building && (
-          <span
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-[12.5px] font-semibold text-ink-sub"
-            style={{ ...toPx(building.position), textShadow: '0 0 3px #fff, 0 0 3px #fff' }}
-          >
-            {building.name}
-          </span>
-        )}
         <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border-[1.5px] border-primary bg-white py-1 pl-1 pr-3 shadow-float">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[13px] font-extrabold text-white">P</span>
           <span className="text-[12.5px] font-bold text-primary">{lot.shortName}</span>

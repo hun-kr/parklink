@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn';
 import type { LotFilters } from '@/lib/filters';
 
 const CHIP =
-  'flex h-[34px] shrink-0 items-center gap-[3px] rounded-full border px-2 text-[12px] font-semibold tracking-[-0.02em] shadow-[0_1px_6px_rgba(17,26,46,0.10)] transition-colors';
+  'flex h-[34px] shrink-0 items-center gap-[3px] rounded-full border px-2 text-[12px] font-semibold tracking-[-0.02em] shadow-[0_1px_6px_rgba(17,24,39,0.10)] transition-colors';
 
 function chipClass(active: boolean) {
   return cn(CHIP, active ? 'border-primary bg-primary-light text-primary' : 'border-[#E6E9EE] bg-white text-ink');
@@ -47,7 +47,7 @@ export default function FilterChips({
         type="button"
         aria-label="상세 필터"
         onClick={onMoreFilters}
-        className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-[#E6E9EE] bg-white text-ink shadow-[0_1px_6px_rgba(17,26,46,0.10)]"
+        className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-[#E6E9EE] bg-white text-ink shadow-[0_1px_6px_rgba(17,24,39,0.10)]"
       >
         <SlidersHorizontal size={17} strokeWidth={2.2} />
       </button>

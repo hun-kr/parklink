@@ -36,7 +36,7 @@ export default function NavBanner({ content, tone = 'navy' }: { content: BannerC
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-[22px] text-white shadow-[0_6px_20px_rgba(17,26,46,0.25)] transition-colors duration-500',
+        'overflow-hidden rounded-[22px] text-white shadow-[0_6px_20px_rgba(17,24,39,0.25)] transition-colors duration-500',
         tone === 'green' ? 'bg-available' : 'bg-navy',
       )}
     >

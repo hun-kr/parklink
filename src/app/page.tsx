@@ -140,7 +140,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={() => setListOpen(true)}
-            className="flex h-[42px] items-center gap-2 rounded-full border border-[#E6E9EE] bg-white px-4 text-[14.5px] font-semibold shadow-[0_2px_10px_rgba(17,26,46,0.12)]"
+            className="flex h-[42px] items-center gap-2 rounded-full border border-[#E6E9EE] bg-white px-4 text-[14.5px] font-semibold shadow-[0_2px_10px_rgba(17,24,39,0.12)]"
           >
             <List size={20} strokeWidth={2.2} />
             목록보기

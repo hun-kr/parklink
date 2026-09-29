@@ -8,16 +8,18 @@ import MapView, { type MapMarker, type MapViewHandle } from '@/components/map/Ma
 import LotEntryView from '@/components/navigation/LotEntryView';
 import NavBanner, { type BannerContent } from '@/components/navigation/NavBanner';
 import NavBottomCard from '@/components/navigation/NavBottomCard';
+import RerouteCard, { type RerouteOffer } from '@/components/navigation/RerouteCard';
 import { CarMarker, DestinationMarker, TurnCallout } from '@/components/navigation/NavMarkers';
 import { useNow } from '@/hooks/useNow';
 import { noteReplace } from '@/hooks/useSafeBack';
 import { cn } from '@/lib/cn';
 import { CONFIG } from '@/lib/config';
 import { formatDistance, formatSlotPosition, formatTime } from '@/lib/format';
+import { rankZones } from '@/lib/recommend';
 import { MANEUVER_TEXT, buildRoute, maneuvers, pointAt, remainingPoints, roundGuideMeters } from '@/lib/route';
 import type { Slot, ZoneId } from '@/lib/types';
 import { DEMO_SLOT_ID } from '@/mocks/lotLayout';
-import { getNavRoute, getSlots, releaseReservation, reserveSlot } from '@/services/parkingService';
+import { getLotSummary, getNavRoute, getSlots, releaseReservation, reserveSlot, rushZone } from '@/services/parkingService';
 import { useMyCarStore } from '@/store/useMyCarStore';
 import { useLotSummary, useRecommendation, useSlots } from '@/store/useParkingStore';
 import { toast } from '@/store/useToastStore';
@@ -48,7 +50,7 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
   const mapRef = useRef<MapViewHandle>(null);
 
   // 목표 칸은 안내 시작 시점에 한 번 정하고, 안내 중에는 시뮬레이터가 채우지 못하게 예약
-  const [target] = useState<Slot | null>(() => {
+  const [target, setTarget] = useState<Slot | null>(() => {
     const zone = zoneId ?? (lot.zones && recommendation?.lotId === lotId ? recommendation.zoneId : null);
     return lot.zones ? pickTarget(getSlots(lotId), zone) : null;
   });
@@ -67,6 +69,36 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
   const [sound, setSound] = useState(true);
   const followRef = useRef(follow);
   followRef.current = follow;
+  const [offer, setOffer] = useState<RerouteOffer | null>(null);
+  const rerouteFired = useRef(false);
+  const targetRef = useRef(target);
+  targetRef.current = target;
+
+  /** S08: 목표 구역이 빠르게 차는 상황을 연출하고, 다른 구역을 제안한다 */
+  const fireReroute = () => {
+    rerouteFired.current = true;
+    const current = targetRef.current;
+    if (!current) return;
+    const { before, after } = rushZone(lotId, current.zone, CONFIG.nav.rerouteLeave);
+    if (after >= before) return;
+    const summary = getLotSummary(lotId);
+    const alt = summary && rankZones(summary.zoneSummaries, CONFIG.demo.mainDestinationId).find((r) => r.selectable && r.zone.id !== current.zone);
+    if (!alt) return;
+    setOffer({
+      from: { zone: current.zone, before, after },
+      to: { zone: alt.zone.id, available: alt.zone.availableSpaces, walkMinutes: alt.walkMinutes },
+    });
+  };
+
+  const switchZone = () => {
+    if (!offer) return;
+    const next = pickTarget(getSlots(lotId), offer.to.zone);
+    if (next) {
+      setTarget(next);
+      toast(`${offer.to.zone}구역으로 안내를 바꿨어요.`);
+    }
+    setOffer(null);
+  };
 
   const car = pointAt(route, d);
   const entryMeters = target ? ENTRY_METERS : 0;
@@ -80,6 +112,7 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
       const p = Math.min(1, (t - start) / CONFIG.nav.driveMs);
       const dist = easeInOut(p) * route.total;
       setD(dist);
+      if (!rerouteFired.current && p >= CONFIG.nav.rerouteAtProgress) fireReroute();
       if (followRef.current && mapRef.current) {
         const { width, height } = mapRef.current.getSize();
         mapRef.current.jumpTo(pointAt(route, dist).point, {
@@ -88,11 +121,16 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
         });
       }
       if (p < 1) raf = requestAnimationFrame(tick);
-      else setPhase(target ? 'entering' : 'arrived');
+      else {
+        // 답하지 않고 도착하면 기존 구역 유지
+        setOffer(null);
+        setPhase(targetRef.current ? 'entering' : 'arrived');
+      }
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [phase, route, target]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, route]);
 
   // ---- 도착 처리 ----
   useEffect(() => {
@@ -211,7 +249,7 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
     scale: CONFIG.nav.followScale,
   }));
 
-  const ctrl = 'flex h-[46px] w-[46px] items-center justify-center rounded-[14px] bg-white text-ink shadow-[0_2px_10px_rgba(17,26,46,0.14)]';
+  const ctrl = 'flex h-[46px] w-[46px] items-center justify-center rounded-[14px] bg-white text-ink shadow-[0_2px_10px_rgba(17,24,39,0.14)]';
 
   return (
     <>
@@ -261,8 +299,24 @@ export default function NavigateClient({ lotId, zoneId }: { lotId: string; zoneI
           )}
         </AnimatePresence>
 
+        {/* S08 AI 재추천 */}
+        <AnimatePresence>
+          {phase === 'driving' && offer && (
+            <div className="absolute inset-x-3.5 bottom-4 z-30">
+              <RerouteCard
+                offer={offer}
+                onKeep={() => {
+                  setOffer(null);
+                  toast(`${offer.from.zone}구역으로 계속 안내할게요.`);
+                }}
+                onSwitch={switchZone}
+              />
+            </div>
+          )}
+        </AnimatePresence>
+
         {/* 오른쪽 컨트롤 */}
-        {phase === 'driving' && (
+        {phase === 'driving' && !offer && (
           <div className="absolute bottom-5 right-3.5 z-20 flex flex-col gap-3">
             <button type="button" aria-label="지도 레이어" className={ctrl} onClick={() => toast('위성 지도는 준비 중이에요.')}>
               <Layers size={22} />

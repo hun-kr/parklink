@@ -65,7 +65,7 @@ export default function BottomSheet({
           ref={ref}
           role="dialog"
           className={cn(
-            'absolute inset-x-0 bottom-0 z-50 flex flex-col rounded-t-[24px] bg-white shadow-[0_-6px_24px_rgba(17,26,46,0.12)]',
+            'absolute inset-x-0 bottom-0 z-50 flex flex-col rounded-t-[24px] bg-white shadow-[0_-6px_24px_rgba(17,24,39,0.12)]',
             className,
           )}
           initial={{ y: '100%' }}

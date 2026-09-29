@@ -21,7 +21,7 @@ export default function NavBottomCard({
   onEnd: () => void;
 }) {
   return (
-    <div className="relative z-20 shrink-0 rounded-t-[24px] bg-white px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-2.5 shadow-[0_-6px_24px_rgba(17,26,46,0.10)]">
+    <div className="relative z-20 shrink-0 rounded-t-[24px] bg-white px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-2.5 shadow-[0_-6px_24px_rgba(17,24,39,0.10)]">
       <div className="flex justify-center">
         <span className="h-1 w-10 rounded-full bg-[#D5DAE1]" />
       </div>

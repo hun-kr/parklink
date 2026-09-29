@@ -1,9 +1,15 @@
+'use client';
+
 /**
  * 지도 컴포넌트 인터페이스.
- * 지금은 SVG 가상 지도(VirtualMapView)로 구현하고, 추후 카카오/네이버 지도로 교체할 때는
- * 같은 props / handle 을 만족하는 구현체로 바꿔 끼우면 된다.
+ * 기본은 네이버 지도(NaverMapView)이고, Client ID 가 없거나 로드·인증에 실패하면
+ * SVG 가상 지도(VirtualMapView)로 자동 대체한다. 두 구현체 모두 같은 props / handle 을 만족한다.
+ * 좌표는 항상 가상 지도 좌표(MapPoint)이며, 네이버 지도는 lib/geo 로 위경도로 바꿔 그린다.
  */
 import type { ReactNode, Ref } from 'react';
+import { useMapProviderStore } from '@/store/useMapProviderStore';
+import NaverMapView from './NaverMapView';
+import VirtualMapView from './VirtualMapView';
 import type { MapPoint } from '@/lib/types';
 
 export interface MapViewState {
@@ -68,4 +74,7 @@ export interface MapViewProps {
   className?: string;
 }
 
-export { default } from './VirtualMapView';
+export default function MapView(props: MapViewProps) {
+  const provider = useMapProviderStore((s) => s.provider);
+  return provider === 'virtual' ? <VirtualMapView {...props} /> : <NaverMapView {...props} />;
+}

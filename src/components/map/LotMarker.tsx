@@ -88,7 +88,7 @@ export default function LotMarker({
         <motion.span
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative flex origin-bottom-left flex-col items-end drop-shadow-[0_4px_10px_rgba(10,91,217,0.3)]"
+          className="relative flex origin-bottom-left flex-col items-end drop-shadow-[0_4px_10px_rgba(30,94,235,0.3)]"
         >
           <span className="relative flex items-center gap-2 rounded-[12px] bg-primary py-2 pl-2 pr-3.5">
             <PCircle className="!bg-white !text-primary" size={30} />

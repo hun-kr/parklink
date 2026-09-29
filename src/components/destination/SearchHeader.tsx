@@ -31,7 +31,7 @@ export default function SearchHeader({
         <ChevronLeft size={28} strokeWidth={2.2} />
       </button>
       <form
-        className="flex h-[48px] min-w-0 flex-1 items-center gap-2.5 rounded-full border border-[#E6E9EE] bg-white pl-4 pr-2 shadow-[0_2px_10px_rgba(17,26,46,0.08)] focus-within:border-primary"
+        className="flex h-[48px] min-w-0 flex-1 items-center gap-2.5 rounded-full border border-[#E6E9EE] bg-white pl-4 pr-2 shadow-[0_2px_10px_rgba(17,24,39,0.08)] focus-within:border-primary"
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit();

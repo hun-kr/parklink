@@ -43,7 +43,7 @@ export default function SlotPreview({
       <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} className="block h-[150px] w-full" preserveAspectRatio="xMidYMid slice" aria-label="내 주차 위치 미리보기">
         <FloorBase zones={zoneDefs} />
         <SlotLayer items={slotRects} />
-        <rect x={r.x - 2} y={r.y - 2} width={r.w + 4} height={r.h + 4} rx={2} fill="#16A34A" fillOpacity={0.35} />
+        <rect x={r.x - 2} y={r.y - 2} width={r.w + 4} height={r.h + 4} rx={2} fill="#2FAF56" fillOpacity={0.35} />
         <rect x={r.x - 0.6} y={r.y - 0.6} width={r.w + 1.2} height={r.h + 1.2} rx={1.2} fill="#2FBF63" stroke="#fff" strokeWidth={0.9} />
         {/* 구역 라벨 */}
         <g transform={`translate(${Math.max(zr.x + 16, vx + 16)} ${Math.max(zr.y + 6, vy + 7)})`}>
@@ -54,7 +54,7 @@ export default function SlotPreview({
         </g>
         {/* 핀 */}
         <g transform={`translate(${r.x + r.w / 2} ${r.y - 1})`}>
-          <path d="M 0 0 L -3 -5 A 7 7 0 1 1 3 -5 Z" fill="#16A34A" stroke="#fff" strokeWidth={1} />
+          <path d="M 0 0 L -3 -5 A 7 7 0 1 1 3 -5 Z" fill="#2FAF56" stroke="#fff" strokeWidth={1} />
           {/* 자동차 */}
           <g fill="#fff">
             <path d="M -3.4 -10.2 L -2.4 -12.6 L 2.4 -12.6 L 3.4 -10.2 Z" />

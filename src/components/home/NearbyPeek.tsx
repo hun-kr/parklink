@@ -10,7 +10,7 @@ export default function NearbyPeek({ count, onOpen }: { count: number; onOpen: (
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => e.key === 'Enter' && onOpen()}
-      className="rounded-t-[24px] bg-white px-5 pb-4 pt-2.5 shadow-[0_-4px_18px_rgba(17,26,46,0.08)]"
+      className="rounded-t-[24px] bg-white px-5 pb-4 pt-2.5 shadow-[0_-4px_18px_rgba(17,24,39,0.08)]"
     >
       <div className="flex justify-center">
         <span className="h-1 w-10 rounded-full bg-[#D5DAE1]" />
